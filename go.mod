@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/google/go-github/v58 v58.0.0
-	github.com/wzshiming/gh-gpt v0.1.0
+	github.com/wzshiming/gh-gpt v0.2.0
 	golang.org/x/oauth2 v0.16.0
 )
 

@@ -12,7 +12,7 @@ import (
 	"strconv"
 
 	"github.com/google/go-github/v58/github"
-	"github.com/wzshiming/gh-pr-summarize/gpt"
+	"github.com/wzshiming/gh-gpt/pkg/run"
 	"github.com/wzshiming/gh-pr-summarize/source"
 	"github.com/wzshiming/gh-pr-summarize/prompts"
 )
@@ -103,23 +103,26 @@ func main() {
 		os.Exit(1)
 	}
 
-	summaryDiscussion, err := gpt.Generate(ctx, prompts.SummarizeDiscussion(title, discussion))
+	summaryDiscussion, err := run.Run(ctx, prompts.SummarizeDiscussion(title, discussion))
 	if err != nil {
 		slog.Error("summarize discussion", "err", err)
 		os.Exit(1)
 	}
+	summaryDiscussion = strings.TrimSpace(summaryDiscussion)
 
-	summaryFileDiff, err := gpt.Generate(ctx, prompts.SummarizeFileDiff(patch))
+	summaryFileDiff, err := run.Run(ctx, prompts.SummarizeFileDiff(patch))
 	if err != nil {
 		slog.Error("summarize file diff", "err", err)
 		os.Exit(1)
 	}
+	summaryFileDiff = strings.TrimSpace(summaryFileDiff)
 
-	summary, err := gpt.Generate(ctx, prompts.ConventionalPullRequest(summaryDiscussion, summaryFileDiff))
+	summary, err := run.Run(ctx, prompts.ConventionalPullRequest(summaryDiscussion, summaryFileDiff))
 	if err != nil {
 		slog.Error("conventional PR", "err", err)
 		os.Exit(1)
 	}
+	summary = strings.TrimSpace(summary)
 
 	fmt.Printf("%s\n[MODIFICATION]\n%s\n[DISCUSSTION]\n%s\n", summary, summaryFileDiff, summaryDiscussion)
 }
