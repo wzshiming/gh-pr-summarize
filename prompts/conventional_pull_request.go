@@ -11,14 +11,22 @@ var conventionalPullRequestTemplate string
 
 var conventionalPullRequest = template.Must(template.New("conventional_pull_request").Parse(conventionalPullRequestTemplate))
 
-func ConventionalPullRequest(summaryDiscussion, summaryPoints string) string {
+func ConventionalPullRequest(title string, cs []Comment, fileDiffs string) string {
+	fileDiffs = OmitLongLines(fileDiffs)
+
 	buf := bytes.NewBuffer(nil)
 	err := conventionalPullRequest.Execute(buf, map[string]any{
-		"summaryDiscussion": summaryDiscussion,
-		"summaryPoints":     summaryPoints,
+		"title":      title,
+		"discussion": cs,
+		"fileDiffs":  fileDiffs,
 	})
 	if err != nil {
 		panic(err)
 	}
 	return buf.String()
+}
+
+type Comment struct {
+	User string
+	Body string
 }

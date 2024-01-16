@@ -103,28 +103,16 @@ func main() {
 		os.Exit(1)
 	}
 
-	summaryDiscussion, err := run.Run(ctx, prompts.SummarizeDiscussion(title, discussion))
-	if err != nil {
-		slog.Error("summarize discussion", "err", err)
-		os.Exit(1)
-	}
-	summaryDiscussion = strings.TrimSpace(summaryDiscussion)
-
-	summaryFileDiff, err := run.Run(ctx, prompts.SummarizeFileDiff(patch))
-	if err != nil {
-		slog.Error("summarize file diff", "err", err)
-		os.Exit(1)
-	}
-	summaryFileDiff = strings.TrimSpace(summaryFileDiff)
-
-	summary, err := run.Run(ctx, prompts.ConventionalPullRequest(summaryDiscussion, summaryFileDiff))
+	summary, err := run.Run(ctx, prompts.ConventionalPullRequest(title, discussion, patch))
 	if err != nil {
 		slog.Error("conventional PR", "err", err)
 		os.Exit(1)
 	}
+
+	summary = strings.Replace(summary, "\n\n", "\n", -1)
 	summary = strings.TrimSpace(summary)
 
-	fmt.Printf("%s\n[MODIFICATION]\n%s\n[DISCUSSTION]\n%s\n", summary, summaryFileDiff, summaryDiscussion)
+	fmt.Printf("%s\n", summary)
 }
 
 func getPatch(owner, repo string, number int) (string, error) {
