@@ -88,13 +88,13 @@ func main() {
 	title = *issue.Title
 	discussion = append(discussion, prompts.Comment{
 		User: *issue.User.Login,
-		Body: *issue.Body,
+		Body: defaultValue(issue.Body),
 	})
 
 	err = client.ListCommits(ctx, owner, repo, number, func(comment *github.IssueComment) error {
 		discussion = append(discussion, prompts.Comment{
 			User: *comment.User.Login,
-			Body: *comment.Body,
+			Body: defaultValue(comment.Body),
 		})
 		return nil
 	})
@@ -145,4 +145,12 @@ func getPatch(owner, repo string, number int) (string, error) {
 	}
 
 	return string(patch), nil
+}
+
+func defaultValue[T any](t *T) T {
+	var z T
+	if t == nil {
+		return z
+	}
+	return *t
 }
